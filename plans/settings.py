@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'puml_generator',    
     'db',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,14 @@
+@startuml
+actor Пользователь as User
+User -> View : 1. Отправка формы (POST Request)
+View -> Form : 2. Валидация данных формы
+Form -> View : 3. Возвращаются провалидированные данные
+View -> Model : 4. Создание нового объекта
+database "База данных" as Database
+Model -> Database : 5. Сохранение объекта
+Database --> Model : 6. Подтверждение того, что объект сохранен
+Model --> View : 7. Возвращение созданного объекта
+View -> Template : 8. Рендер HTML-страницы с сообщением, что объект успешно создан
+Template --> View : 9. Возвращение HTML-страницы
+View --> User : 10. Возвращается HTTP Response
+@enduml

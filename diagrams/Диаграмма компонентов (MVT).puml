@@ -1,0 +1,24 @@
+@startuml
+[Web-клиент]
+
+folder "Сервер" {
+    [View]
+    [Model]
+    [Template]
+
+    database "PostgreSQL" {
+        
+    }
+}
+[Web-клиент] --> [View]: 1. HTTP запрос
+[View] --> [Web-клиент]: 8. HTML-страница передается в ответе с сервера
+
+[View] --> [Model]: 2. Запрос к модели \n запрашиваемых данных
+[Model] --> [View]: 5. Данные передаются \n в ответ
+
+[View] --> [Template]: 6. Рендер шаблона \n с переданными в него данными
+[Template] --> [View]: 7. Возвращается HTML-страница
+
+[Model] --> [PostgreSQL]: 3. Через Django ORM \n формируется SQL запрос в БД
+[PostgreSQL] --> [Model]: 4. Из БД возвращаются \n запрошенные данные
+@enduml

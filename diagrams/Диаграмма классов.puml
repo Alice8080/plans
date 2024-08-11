@@ -1,0 +1,101 @@
+@startuml 
+class "db.Instruction <Db>" as db.Instruction #e4f4d6 {
+    Инструкция
+    --
+    + id (UUIDField)
+    + name (CharField)
+    + description (TextField)
+    + minimum_execution_time (DurationField)
+    + priority (CharField)
+    --
+}
+
+
+class "db.ConstraintType <Db>" as db.ConstraintType #e4f4d6 {
+    Тип ограничения
+    --
+    + id (UUIDField)
+    + name (CharField)
+    + description (TextField)
+    --
+}
+
+
+class "db.Constraint <Db>" as db.Constraint #e4f4d6 {
+    Ограничение
+    --
+    + id (UUIDField)
+    + name (CharField)
+    + description (TextField)
+    ~ type (ForeignKey)
+    ~ instruction (ForeignKey)
+    # incompatible_instructions (ManyToManyField)
+    --
+}
+db.Constraint -- db.ConstraintType
+db.Constraint -- db.Instruction
+db.Constraint *--* db.Instruction
+
+
+class "db.YearPlan <Db>" as db.YearPlan #e4f4d6 {
+    Годовой план полета
+    --
+    + id (UUIDField)
+    + approved (BooleanField)
+    + commissioning_date (DateField)
+    --
+}
+
+
+class "db.MonthPlan <Db>" as db.MonthPlan #e4f4d6 {
+    Месячный план полета
+    --
+    + id (UUIDField)
+    + approved (BooleanField)
+    + commissioning_date (DateField)
+    ~ year_plan (ForeignKey)
+    --
+}
+db.MonthPlan -- db.YearPlan
+
+
+class "db.WeekPlan <Db>" as db.WeekPlan #e4f4d6 {
+    Недельный план полета
+    --
+    + id (UUIDField)
+    + approved (BooleanField)
+    + commissioning_date (DateField)
+    ~ month_plan (ForeignKey)
+    --
+}
+db.WeekPlan -- db.MonthPlan
+
+
+class "db.DayPlan <Db>" as db.DayPlan #e4f4d6 {
+    Дневной план полета
+    --
+    + id (UUIDField)
+    + approved (BooleanField)
+    + commissioning_date (DateField)
+    ~ week_plan (ForeignKey)
+    # instructions (ManyToManyField)
+    --
+}
+db.DayPlan -- db.WeekPlan
+db.DayPlan *--* db.Instruction
+
+
+class "db.DayPlanInstructionInfo <Db>" as db.DayPlanInstructionInfo #e4f4d6 {
+    Информация об инструкции дневного плана полета
+    --
+    + id (UUIDField)
+    ~ day_plan (ForeignKey)
+    ~ instruction (ForeignKey)
+    + number (IntegerField)
+    --
+}
+db.DayPlanInstructionInfo -- db.DayPlan
+db.DayPlanInstructionInfo -- db.Instruction
+
+
+@enduml

@@ -1,0 +1,34 @@
+@startuml 
+title Диаграмма состояний плана полета
+state "План создан" as Created
+state "План подтвержден" as Approval
+state "План введен в эксплуатацию" as Commissioning
+
+[*] --> Created
+state Created {
+    state "Новый план" as New
+    state "Выбран годовой" as Year
+    state "Выбран месячный" as Month
+    state "Выбран недельный" as Week
+    state "Выбран дневной" as Day
+    state "Выбран план, в который входит текущий план" as ParentSelected
+    state "План сохранен" as Saved
+    state "Выбраны включаемые в план инструкции" as InstructionsSelected
+    state "Выбрана дата ввода в действие" as CommissioningDateSelected
+    New --> Year: Выбор типа плана
+    New --> Month: Выбор типа плана
+    New --> Week: Выбор типа плана
+    New --> Day: Выбор типа плана
+    Day --> InstructionsSelected: Выбор инструкций плана
+    InstructionsSelected --> ParentSelected: Выбор родительского плана
+    Month --> ParentSelected: Выбор родительского плана
+    Week --> ParentSelected: Выбор родительского плана
+    Year --> CommissioningDateSelected: Выбор даты ввода в действие
+    ParentSelected --> CommissioningDateSelected
+    CommissioningDateSelected --> Saved: Сохранение
+}
+Created --> Approval: Подтверждение плана
+Approval --> Commissioning: Введение в эксплуатацию
+Commissioning --> [*]
+
+@enduml

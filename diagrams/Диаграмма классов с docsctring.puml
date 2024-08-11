@@ -1,0 +1,150 @@
+@startuml 
+class "db.Instruction <Db>" as db.Instruction #e4f4d6 {
+    Инструкция
+    ..
+    Инструкция - это набор действий, которые необходимо выполнить.
+    Атрибуты:
+        id (UUIDField): Уникальный идентификатор инструкции.
+        name (CharField): Название инструкции.
+        description (TextField): Описание инструкции.
+        minimum_execution_time (DurationField): Минимальное время выполнения
+инструкции.
+        priority (CharField): Приоритет инструкции.
+    --
+    + id (UUIDField) - 
+    + name (CharField) - 
+    + description (TextField) - 
+    + minimum_execution_time (DurationField) - 
+    + priority (CharField) - 
+    --
+}
+
+
+class "db.ConstraintType <Db>" as db.ConstraintType #e4f4d6 {
+    Тип ограничения
+    ..
+    Тип ограничения - это категория ограничений, которые могут быть применены к
+инструкциям.
+    Атрибуты:
+        id (UUIDField): Уникальный идентификатор типа ограничения.
+        name (CharField): Название типа ограничения.
+        description (TextField): Описание типа ограничения.
+    --
+    + id (UUIDField) - 
+    + name (CharField) - 
+    + description (TextField) - 
+    --
+}
+
+
+class "db.Constraint <Db>" as db.Constraint #e4f4d6 {
+    Ограничение
+    ..
+    Ограничение - это конкретное ограничение, которое может быть применено к
+инструкции.
+    Атрибуты:
+        id (UUIDField): Уникальный идентификатор ограничения.
+        name (CharField): Название ограничения.
+        description (TextField): Описание ограничения.
+        type (ForeignKey): Тип ограничения.
+        instruction (ForeignKey): Инструкция, к которой применено ограничение.
+        incompatible_instructions (ManyToManyField): Инструкции, которые
+несовместимы с этой инструкцией.
+    --
+    + id (UUIDField) - 
+    + name (CharField) - 
+    + description (TextField) - 
+    ~ type (ForeignKey) - 
+    ~ instruction (ForeignKey) - 
+    # incompatible_instructions (ManyToManyField) - 
+    --
+}
+db.Constraint -- db.ConstraintType
+db.Constraint -- db.Instruction
+db.Constraint *--* db.Instruction
+
+
+class "db.YearPlan <Db>" as db.YearPlan #e4f4d6 {
+    Годовой план полета
+    ..
+    Годовой план полета - это план, который охватывает один год.
+    --
+    + id (UUIDField) - 
+    + approved (BooleanField) - 
+    + commissioning_date (DateField) - 
+    --
+}
+
+
+class "db.MonthPlan <Db>" as db.MonthPlan #e4f4d6 {
+    Месячный план полета
+    ..
+    Месячный план полета - это план, который охватывает один месяц.
+    Атрибуты:
+        year_plan (ForeignKey): Годовой план, в который входит месячный план.
+    --
+    + id (UUIDField) - 
+    + approved (BooleanField) - 
+    + commissioning_date (DateField) - 
+    ~ year_plan (ForeignKey) - 
+    --
+}
+db.MonthPlan -- db.YearPlan
+
+
+class "db.WeekPlan <Db>" as db.WeekPlan #e4f4d6 {
+    Недельный план полета
+    ..
+    Недельный план полета - это план, который охватывает одну неделю.
+    Атрибуты:
+        month_plan (ForeignKey): Месячный план, в который входит недельный план.
+    --
+    + id (UUIDField) - 
+    + approved (BooleanField) - 
+    + commissioning_date (DateField) - 
+    ~ month_plan (ForeignKey) - 
+    --
+}
+db.WeekPlan -- db.MonthPlan
+
+
+class "db.DayPlan <Db>" as db.DayPlan #e4f4d6 {
+    Дневной план полета
+    ..
+    Дневной план полета - это план, который охватывает один день.
+    Атрибуты:
+        week_plan (ForeignKey): Недельный план, в который входит дневной план.
+        instructions (ManyToManyField): Инструкции, которые входят в план.
+    --
+    + id (UUIDField) - 
+    + approved (BooleanField) - 
+    + commissioning_date (DateField) - 
+    ~ week_plan (ForeignKey) - 
+    # instructions (ManyToManyField) - 
+    --
+}
+db.DayPlan -- db.WeekPlan
+db.DayPlan *--* db.Instruction
+
+
+class "db.DayPlanInstructionInfo <Db>" as db.DayPlanInstructionInfo #e4f4d6 {
+    Информация об инструкции дневного плана полета
+    ..
+    Информация об инструкции дневного плана полета.
+    Атрибуты:
+        id (UUIDField): Уникальный идентификатор инструкции.
+        day_plan (ForeignKey): Дневной план, в который входит инструкция.
+        instruction (ForeignKey): Инструкция, которая входит в план.
+        number (IntegerField): Номер в последовательности инструкций.
+    --
+    + id (UUIDField) - 
+    ~ day_plan (ForeignKey) - 
+    ~ instruction (ForeignKey) - 
+    + number (IntegerField) - 
+    --
+}
+db.DayPlanInstructionInfo -- db.DayPlan
+db.DayPlanInstructionInfo -- db.Instruction
+
+
+@enduml
